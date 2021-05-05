@@ -42,16 +42,43 @@ class ClienteMODBUS():
                             sleep(0.8)
                         else:
                             break
-                    addr = input(f'Address: ')
-                    leng = input(f'Length: ')
-                    nvezes = input('Quantidade de leituras: ')
-                    print('\nComeçando leitura..')
-                    sleep(1)
-                    for i in range(0, int(nvezes)):
-                        print(f'\033[33mLeitura {i + 1}:\033[m {self.lerDado(int(tipo), int(addr), int(leng))}')
-                        sleep(self._scan_time)
-                    print('Fim de leitura..\n')
-                    sleep(0.8)
+                    if tipo == 3:
+                        val = input("\n1- Leitura Integer \n2- Leitura Float \nLeitura: ")
+                        if val == 1:
+                            addr = input(f'\nAddress: ')
+                            leng = input(f'Length: ')
+                            nvezes = input('Quantidade de leituras: ')
+                            print('\nComeçando leitura..')
+                            sleep(1)
+                            for i in range(0, int(nvezes)):
+                                print(f'\033[33mLeitura {i + 1}:\033[m {self.lerDado(int(tipo), int(addr), int(leng))}')
+                                sleep(self._scan_time)
+                            print('Fim de leitura..\n')
+                            sleep(0.8)
+                        else:
+                            addr = input(f'\nAddress: ')
+                            leng = int(input(f'Length: '))
+                            nvezes = input('Quantidade de leituras: ')
+                            print('\nComeçando leitura..')
+                            sleep(1)
+                            for i in range(0, int(nvezes)):
+                                print(
+                                    f'\033[33mLeitura {i + 1}:\033[m {self.lerDadoFloat(int(tipo), int(addr), leng)}')
+                                sleep(self._scan_time)
+                            print('Fim de leitura FLOAT..\n')
+                            sleep(0.8)
+                    else:
+                        addr = input(f'\nAddress: ')
+                        leng = input(f'Length: ')
+                        nvezes = input('Quantidade de leituras: ')
+                        print('\nComeçando leitura..')
+                        sleep(1)
+                        for i in range(0, int(nvezes)):
+                            print(
+                                f'\033[33mLeitura {i + 1}:\033[m {self.lerDado(int(tipo), int(addr), int(leng))}')
+                            sleep(self._scan_time)
+                        print('Fim de leitura..\n')
+                        sleep(0.8)
 
                 elif sel == '2':
                     sleep(1)
@@ -75,9 +102,9 @@ class ClienteMODBUS():
                     self._scan_time = float(scant)
 
                 elif sel == '4':
-                    sleep(0.5)
+                    sleep(0.2)
                     print('\n\033[32mFechando sistema..\033[m')
-                    sleep(1)
+                    sleep(0.5)
                     self._cliente.close()
                     atendimento = False
 
@@ -88,8 +115,7 @@ class ClienteMODBUS():
         except Exception as e:
             print('\033[31mERRO: ', e.args, '\033[m')
 
-
-    def lerDado(self, tipo, addr, leng):
+    def lerDado(self, tipo, addr, leng=1):
         """
         Método para leitura MODBUS
         """
@@ -103,6 +129,34 @@ class ClienteMODBUS():
             return self._cliente.read_input_registers(addr - 1, leng)
         else:
             print('Tipo de leitura inválido..')
+
+    def lerDadoFloat(self, tipo, addr, leng):
+        """
+        Método para leitura MODBUS
+        """
+        i = 0
+        g = 0
+        e1 = []
+        b2 = ''
+        while i < leng:
+            i1 = self._cliente.read_holding_registers(addr - 1 + g, 2)
+            for x in i1:
+                x = bin(x).lstrip("0b")
+                e1.insert(0 + g, x)
+            i += 1
+            g += 2
+        e = 0
+        while e <= leng:
+            e2 = ''
+            for x in e1:
+                e2 = str(f'{e2}{x.rjust(16, "0")}')
+            e += 1
+        d = 0
+        lee = int(len(e2))
+        while d < lee:
+            b2 = str(f'{b2}\n{e2:<32} ')
+            d += 34
+            return b2
 
     def escreveDado(self, tipo, addr, valor):
         """
