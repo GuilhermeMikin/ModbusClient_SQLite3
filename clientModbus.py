@@ -42,42 +42,57 @@ class ClienteMODBUS():
                             sleep(0.8)
                         else:
                             break
-                    if tipo == 3:
-                        val = input("\n1- Leitura Integer \n2- Leitura Float \nLeitura: ")
-                        if val == 1:
-                            addr = input(f'\nAddress: ')
-                            leng = input(f'Length: ')
-                            nvezes = input('Quantidade de leituras: ')
-                            print('\nComeçando leitura..')
-                            sleep(1)
-                            for i in range(0, int(nvezes)):
-                                print(f'\033[33mLeitura {i + 1}:\033[m {self.lerDado(int(tipo), int(addr), int(leng))}')
-                                sleep(self._scan_time)
-                            print('Fim de leitura..\n')
-                            sleep(0.8)
-                        else:
+                    if tipo == 3: #se for holding ragister
+                        while True:
+                            val = int(input("\n1- Leitura Integer \n2- Leitura Float \nLeitura: "))
+                            if val > 2:
+                                print('\033[31mDigite um tipo válido..\033[m')
+                                sleep(0.8)
+                            else:
+                                break
+                        if val == 1: #pode ser INTEGER
                             addr = input(f'\nAddress: ')
                             leng = int(input(f'Length: '))
                             nvezes = input('Quantidade de leituras: ')
-                            print('\nComeçando leitura..')
+                            print('\nComeçando leitura INTEGER..')
                             sleep(1)
                             for i in range(0, int(nvezes)):
-                                print(
-                                    f'\033[33mLeitura {i + 1}:\033[m {self.lerDadoFloat(int(tipo), int(addr), leng)}')
+                                print(f'\033[33mLeitura {i + 1}:\033[m')
+                                self.lerDado(int(tipo), int(addr), leng)
+                                #print(f'\033[33mLeitura {i + 1}:\033[m {self.lerDado(int(tipo), int(addr), int(leng))}')
                                 sleep(self._scan_time)
-                            print('Fim de leitura FLOAT..\n')
+                            print('Fim de leitura INTEGER..\n')
                             sleep(0.8)
+                        elif val == 2: #ou float
+                            addr = input(f'\nAddress: ')
+                            leng = int(input(f'Length: '))
+                            nvezes = input('Quantidade de leituras: ')
+                            print('\nComeçando leitura FLOAT..')
+                            sleep(1)
+                            for i in range(0, int(nvezes)):
+                                print(f'\033[33mLeitura {i + 1}:\033[m')
+                                self.lerDadoFloat(int(tipo), int(addr), leng)
+                                #print(f'\033[33mLeitura {i + 1}:\033[m {self.lerDadoFloat(int(tipo), int(addr), leng)}')
+                                sleep(self._scan_time)
+                            print('\nFim de leitura FLOAT..\n')
+                            sleep(0.8)
+                        else:
+                            sleep(0.3)
+                            print('\033[31mSeleção inválida..\033[m\n')
+                            sleep(0.7)
+
                     else:
                         addr = input(f'\nAddress: ')
-                        leng = input(f'Length: ')
+                        leng = int(input(f'Length: '))
                         nvezes = input('Quantidade de leituras: ')
                         print('\nComeçando leitura..')
                         sleep(1)
                         for i in range(0, int(nvezes)):
-                            print(
-                                f'\033[33mLeitura {i + 1}:\033[m {self.lerDado(int(tipo), int(addr), int(leng))}')
+                            print(f'\033[33mLeitura {i + 1}:\033[m')
+                            self.lerDado(int(tipo), int(addr), leng)
+                            #print(f'\033[33mLeitura {i + 1}:\033[m {self.lerDado(int(tipo), int(addr), int(leng))}')
                             sleep(self._scan_time)
-                        print('Fim de leitura..\n')
+                        print('\nFim de leitura..\n')
                         sleep(0.8)
 
                 elif sel == '2':
@@ -120,13 +135,49 @@ class ClienteMODBUS():
         Método para leitura MODBUS
         """
         if tipo == 1:
-            return self._cliente.read_coils(addr - 1, leng)
+            co = self._cliente.read_coils(addr - 1, leng)
+            ic = 0
+            while ic <= leng:
+                if ic == leng:
+                    break
+                else:
+                    value = co[0 + ic]
+                    ic += 1
+                    print(value)
+            return #self._cliente.read_coils(addr - 1, leng)
         elif tipo == 2:
-            return self._cliente.read_discrete_inputs(addr - 1, leng)
+            di = self._cliente.read_discrete_inputs(addr - 1, leng)
+            idi = 0
+            while idi <= leng:
+                if idi == leng:
+                    break
+                else:
+                    value = di[0 + idi]
+                    idi += 1
+                    print(value)
+            return #self._cliente.read_discrete_inputs(addr - 1, leng)
         elif tipo == 3:
-            return self._cliente.read_holding_registers(addr - 1, leng)
+            hr = self._cliente.read_holding_registers(addr - 1, leng)
+            ihr = 0
+            while ihr <= leng:
+                if ihr == leng:
+                    break
+                else:
+                    value = hr[0+ihr]
+                    ihr += 1
+                    print(value)
+            return #self._cliente.read_holding_registers(addr - 1, leng)
         elif tipo == 4:
-            return self._cliente.read_input_registers(addr - 1, leng)
+            ir = self._cliente.read_input_registers(addr - 1, leng)
+            iir = 0
+            while iir <= leng:
+                if iir == leng:
+                    break
+                else:
+                    value = ir[0 + iir]
+                    iir += 1
+                    print(value)
+            return #self._cliente.read_input_registers(addr - 1, leng)
         else:
             print('Tipo de leitura inválido..')
 
@@ -137,7 +188,6 @@ class ClienteMODBUS():
         i = 0
         g = 0
         e1 = []
-        b2 = ''
         while i < leng:
             i1 = self._cliente.read_holding_registers(addr - 1 + g, 2)
             for x in i1:
@@ -149,14 +199,30 @@ class ClienteMODBUS():
         while e <= leng:
             e2 = ''
             for x in e1:
-                e2 = str(f'{e2}{x.rjust(16, "0")}')
+                e2 = str(f'{e2}{x.rjust(16, "0")} ')
             e += 1
-        d = 0
-        lee = int(len(e2))
-        while d < lee:
-            b2 = str(f'{b2}\n{e2:<32} ')
-            d += 34
-            return b2
+        b2 = str(f'{e2}')
+        e3 = b2.split()
+        y = 0
+        while y < len(e3):
+            ieee = f'{e3[0+y]}{e3[1+y]}'
+            sign = int(ieee[0])
+            expo = str(ieee[1:9])
+            expodec = 0
+            expopot = 7
+            for i in range(8):
+                expodec = expodec + (int(expo[i]) * (2**expopot))
+                expopot -= 1
+            mant = str(ieee[9:])
+            mantdec = 0
+            mantpot = -1
+            for i in range(23):
+                mantdec = mantdec + (int(mant[i]) * (2 ** mantpot))
+                mantpot -= 1
+            value = ((-1)**sign)*(1+mantdec)*2**(expodec-127)
+            print(f'{round(value, 3)}')
+            y += 2
+        return
 
     def escreveDado(self, tipo, addr, valor):
         """
