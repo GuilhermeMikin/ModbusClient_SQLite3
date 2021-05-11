@@ -42,15 +42,17 @@ class ClienteMODBUS():
                             sleep(0.8)
                         else:
                             break
+
                     if tipo == 3: #se for holding ragister
                         while True:
-                            val = int(input("\n1- Leitura Integer \n2- Leitura Float \nLeitura: "))
-                            if val > 2:
+                            val = int(input("\n1- Decimal \n2- Floating Point \n3- Float Swapped \nLeitura: "))
+                            if val > 3:
                                 print('\033[31mDigite um tipo válido..\033[m')
                                 sleep(0.8)
                             else:
                                 break
-                        if val == 1: #pode ser INTEGER
+
+                        if val == 1: #valores INTEGER
                             addr = input(f'\nAddress: ')
                             leng = int(input(f'Length: '))
                             nvezes = input('Quantidade de leituras: ')
@@ -61,9 +63,10 @@ class ClienteMODBUS():
                                 self.lerDado(int(tipo), int(addr), leng)
                                 #print(f'\033[33mLeitura {i + 1}:\033[m {self.lerDado(int(tipo), int(addr), int(leng))}')
                                 sleep(self._scan_time)
-                            print('Fim de leitura INTEGER..\n')
+                            print('\nFim de leitura INTEGER..\n')
                             sleep(0.8)
-                        elif val == 2: #ou float
+
+                        elif val == 2: #valores FLOAT
                             addr = input(f'\nAddress: ')
                             leng = int(input(f'Length: '))
                             nvezes = input('Quantidade de leituras: ')
@@ -76,6 +79,21 @@ class ClienteMODBUS():
                                 sleep(self._scan_time)
                             print('\nFim de leitura FLOAT..\n')
                             sleep(0.8)
+
+                        elif val == 3: #valores FLOAT SWAPPED EM DESENVOLVIMENTO
+                            addr = input(f'\nAddress: ')
+                            leng = int(input(f'Length: '))
+                            nvezes = input('Quantidade de leituras: ')
+                            print('\nComeçando leitura FLOAT..')
+                            sleep(1)
+                            for i in range(0, int(nvezes)):
+                                print(f'\033[33mLeitura {i + 1}:\033[m')
+                                self.lerDadoFloat(int(tipo), int(addr), leng)
+                                #print(f'\033[33mLeitura {i + 1}:\033[m {self.lerDadoFloat(int(tipo), int(addr), leng)}')
+                                sleep(self._scan_time)
+                            print('\nFim de leitura FLOAT..\n')
+                            sleep(0.8)
+
                         else:
                             sleep(0.3)
                             print('\033[31mSeleção inválida..\033[m\n')
