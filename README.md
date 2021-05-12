@@ -1,5 +1,10 @@
 # pyModbusClient
+<<<<<<< HEAD
  Um cliente Modbus com pyModbusTCP
+=======
+ Um cliente Modbus com pyModbusTCP..
+    Agora lendo também valores float no padrão IEEE754
+>>>>>>> LerDadoFloat
 
 ----------------------------------
           Cliente Mosbus
