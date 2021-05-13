@@ -1,17 +1,19 @@
 # pyModbusClient
-<<<<<<< HEAD
- Um cliente Modbus com pyModbusTCP
-=======
  Um cliente Modbus com pyModbusTCP..
-    Agora lendo também valores float no padrão IEEE754
->>>>>>> LerDadoFloat
+
+
+Reading modbus displays:
+Decimal;
+Floating Point;
+Float (Swapped);
+
 
 ----------------------------------
           Cliente Mosbus
 ----------------------------------
-Qual serviço? 
-1- Leitura    
-2- Escrita    
+Qual serviço?
+1- Leitura
+2- Escrita
 3- Configuração
 4- Sair
 Serviço: 1
@@ -21,15 +23,25 @@ Qual tipo de dado deseja ler?
 2- Input Status
 3- Holding Register
 4- Input Register
-Type: 2
-Address: 2
-Length: 10
-Quantidade de leituras: 2
+Type: 3
 
-Começando leitura..
-Leitura 1: [True, True, False, False, True, True, False, False, False, False]
-Leitura 2: [True, True, False, False, False, False, False, False, False, False]
-Fim de leitura..
+1- Decimal
+2- Floating Point
+3- Float Swapped
+Leitura: 3
+
+Address: 1
+Length: 4
+Quantidade de leituras: 1
+
+Começando leitura FLOAT..
+Leitura 1:
+360.28
+10.1
+-13.5
+0.0
+
+Fim de leitura FLOAT..
 
 ----------------------------------
           Cliente Mosbus
