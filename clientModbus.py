@@ -1,5 +1,7 @@
 from pyModbusTCP.client import ModbusClient
 from time import sleep
+import sqlite3
+from threading import Lock
 
 
 class ClienteMODBUS():
@@ -7,12 +9,18 @@ class ClienteMODBUS():
     Classe Cliente MODBUS
     """
 
-    def __init__(self, server_ip, porta, scan_time=1):
+    def __init__(self, server_ip, porta, scan_time=1, valor=0, date='xxxx-xx-xx xx:xx:xx', dbpath="C:\database.db"):
         """
         Construtor
         """
         self._cliente = ModbusClient(host=server_ip, port=porta)
         self._scan_time = scan_time
+        
+        self._dbpath = dbpath
+        self._valor = valor
+        self._date = date
+        self._con = sqlite3.connect(self._dbpath)
+        self._cursor = self._con.cursor()
 
     def atendimento(self):
         """
@@ -56,13 +64,13 @@ class ClienteMODBUS():
                             addr = input(f'\nAddress: ')
                             leng = int(input(f'Length: '))
                             nvezes = input('Quantidade de leituras: ')
-                            print('\nComeçando leitura INTEGER..\n')
+                            print('\nComeçando leitura Decimal..\n')
                             sleep(1)
                             for i in range(0, int(nvezes)):
                                 print(f'\033[33mLeitura {i + 1}:\033[m')
                                 self.lerDado(int(tipo), int(addr), leng)
                                 sleep(self._scan_time)
-                            print('\nFim de leitura INTEGER..\n')
+                            print('\nValores lidos e inseridos no DB com sucesso!!\n')
                             sleep(0.8)
 
                         elif val == 2: #valores FLOAT
@@ -75,7 +83,7 @@ class ClienteMODBUS():
                                 print(f'\033[33mLeitura {i + 1}:\033[m')
                                 self.lerDadoFloat(int(tipo), int(addr), leng)
                                 sleep(self._scan_time)
-                            print('\nFim de leitura FLOAT..\n')
+                            print('\nValores lidos e inseridos no DB com sucesso!!\n')
                             sleep(0.8)
 
                         elif val == 3: #valores FLOAT SWAPPED 
@@ -88,7 +96,7 @@ class ClienteMODBUS():
                                 print(f'\033[33mLeitura {i + 1}:\033[m')
                                 self.lerDadoFloatSwapped(int(tipo), int(addr), leng)
                                 sleep(self._scan_time)
-                            print('\nFim de leitura FLOAT SWAPPED..\n')
+                            print('\nValores lidos e inseridos no DB com sucesso!!\n')
                             sleep(0.8)
 
                         else:
@@ -106,7 +114,7 @@ class ClienteMODBUS():
                             print(f'\033[33mLeitura {i + 1}:\033[m')
                             self.lerDado(int(tipo), int(addr), leng)
                             sleep(self._scan_time)
-                        print('\nFim de leitura..\n')
+                        print('\nValores lidos e inseridos no DB com sucesso!!\n')
                         sleep(0.8)
 
                 elif sel == '2':
@@ -144,6 +152,19 @@ class ClienteMODBUS():
         except Exception as e:
             print('\033[31mERRO: ', e.args, '\033[m')
 
+    def inserirDB(self, value):
+        """
+        Método para inserção dos dados no DB
+        """
+        try:
+            str_values = f"{value} , '{self._date}'"
+            sql_str = f'INSERT INTO pointValues (Valor, TimeStamp1) VALUES ({str_values})'
+            self._cursor.execute(sql_str)
+            self._con.commit()
+            #self._con.close()
+        except Exception as e:
+            print('\033[31mERRO: ', e.args, '\033[m')
+
     def lerDado(self, tipo, addr, leng=1):
         """
         Método para leitura MODBUS
@@ -158,7 +179,13 @@ class ClienteMODBUS():
                     value = co[0 + ic]
                     ic += 1
                     print(value)
+                    if value == True:
+                        value = 1
+                    else:
+                        value = 0
+                    self.inserirDB(value)
             return 
+
         elif tipo == 2:
             di = self._cliente.read_discrete_inputs(addr - 1, leng)
             idi = 0
@@ -169,7 +196,9 @@ class ClienteMODBUS():
                     value = di[0 + idi]
                     idi += 1
                     print(value)
+                    self.inserirDB(value)
             return 
+
         elif tipo == 3:
             hr = self._cliente.read_holding_registers(addr - 1, leng)
             ihr = 0
@@ -180,7 +209,9 @@ class ClienteMODBUS():
                     value = hr[0+ihr]
                     ihr += 1
                     print(value)
+                    self.inserirDB(value)
             return 
+
         elif tipo == 4:
             ir = self._cliente.read_input_registers(addr - 1, leng)
             iir = 0
@@ -191,7 +222,9 @@ class ClienteMODBUS():
                     value = ir[0 + iir]
                     iir += 1
                     print(value)
+                    self.inserirDB(value)
             return 
+
         else:
             print('Tipo de leitura inválido..')
 
@@ -236,6 +269,7 @@ class ClienteMODBUS():
             value = ((-1)**sign)*(1+mantdec)*2**(expodec-127)
             print(f'{round(value, 3)}')
             y += 2
+            self.inserirDB(round(value, 3))
         return
 
     def lerDadoFloatSwapped(self, tipo, addr, leng):
@@ -280,6 +314,7 @@ class ClienteMODBUS():
             value = ((-1)**sign)*(1+mantdec)*2**(expodec-127)
             print(f'{round(value, 3)}')
             y += 2
+            self.inserirDB(round(value, 3))
         return
 
     def escreveDado(self, tipo, addr, valor):
@@ -298,3 +333,5 @@ class ClienteMODBUS():
 
         except Exception as e:
             print('\033[31mERRO: ', e.args, '\033[m')
+
+    
