@@ -104,6 +104,59 @@ class ClienteMODBUS():
                             print('\033[31mSeleção inválida..\033[m\n')
                             sleep(0.7)
 
+                    elif tipo == 4: #Input register
+                        while True:
+                            val = int(input("\n1- Decimal \n2- Floating Point \n3- Float Swapped \nLeitura: "))
+                            if val > 3:
+                                print('\033[31mDigite um tipo válido..\033[m')
+                                sleep(0.8)
+                            else:
+                                break
+
+                        if val == 1: #valores INTEGER
+                            addr = input(f'\nAddress: ')
+                            leng = int(input(f'Length: '))
+                            nvezes = input('Quantidade de leituras: ')
+                            print('\nComeçando leitura Decimal..\n')
+                            sleep(1)
+                            for i in range(0, int(nvezes)):
+                                print(f'\033[33mLeitura {i + 1}:\033[m')
+                                self.lerDado(int(tipo), int(addr), leng)
+                                sleep(self._scan_time)
+                            print('\nValores lidos e inseridos no DB com sucesso!!\n')
+                            sleep(0.8)
+
+                        elif val == 2: #valores FLOAT
+                            addr = input(f'\nAddress: ')
+                            leng = int(input(f'Length: '))
+                            nvezes = input('Quantidade de leituras: ')
+                            print('\nComeçando leitura FLOAT..\n')
+                            sleep(1)
+                            for i in range(0, int(nvezes)):
+                                print(f'\033[33mLeitura {i + 1}:\033[m')
+                                self.lerDadoFloat(int(tipo), int(addr), leng)
+                                sleep(self._scan_time)
+                            print('\nValores lidos e inseridos no DB com sucesso!!\n')
+                            sleep(0.8)
+
+                        elif val == 3: #valores FLOAT SWAPPED 
+                            addr = input(f'\nAddress: ')
+                            leng = int(input(f'Length: '))
+                            nvezes = input('Quantidade de leituras: ')
+                            print('\nComeçando leitura FLOAT SWAPPED..\n')
+                            sleep(1)
+                            for i in range(0, int(nvezes)):
+                                print(f'\033[33mLeitura {i + 1}:\033[m')
+                                self.lerDadoFloatSwapped(int(tipo), int(addr), leng)
+                                sleep(self._scan_time)
+                            print('\nValores lidos e inseridos no DB com sucesso!!\n')
+                            sleep(0.8)
+
+                        else:
+                            sleep(0.3)
+                            print('\033[31mSeleção inválida..\033[m\n')
+                            sleep(0.7)
+
                     else:
                         addr = input(f'\nAddress: ')
                         leng = int(input(f'Length: '))
@@ -199,7 +252,7 @@ class ClienteMODBUS():
                         value = 1
                     else:
                         value = 0
-                    self.inserirDB(addrs=(0000+addr), tipo="'Coil Status'",value=value)
+                    self.inserirDB(addrs=(00000+addr+ic-1), tipo="'Coil Status'",value=value)
             return 
 
         elif tipo == 2:
@@ -212,7 +265,7 @@ class ClienteMODBUS():
                     value = di[0 + idi]
                     idi += 1
                     print(value)
-                    self.inserirDB(addrs=(1000+addr), tipo="'Input Status'",value=value)
+                    self.inserirDB(addrs=(10000+addr+idi-1), tipo="'Input Status'",value=value)
             return 
 
         elif tipo == 3:
@@ -225,7 +278,7 @@ class ClienteMODBUS():
                     value = hr[0+ihr]
                     ihr += 1
                     print(value)
-                    self.inserirDB(addrs=(4000+addr), tipo="'Holding Register'",value=value)
+                    self.inserirDB(addrs=(40000+addr+ihr-1), tipo="'Holding Register'",value=value)
             return 
 
         elif tipo == 4:
@@ -238,7 +291,7 @@ class ClienteMODBUS():
                     value = ir[0 + iir]
                     iir += 1
                     print(value)
-                    self.inserirDB(addrs=(3000+addr), tipo="'Input Register'",value=value)
+                    self.inserirDB(addrs=(30000+addr+iir-1), tipo="'Input Register'",value=value)
             return 
 
         else:
@@ -252,7 +305,16 @@ class ClienteMODBUS():
         g = 0
         e1 = []
         while i < leng:
-            i1 = self._cliente.read_holding_registers(addr - 1 + g, 2)
+            if tipo == 3:
+                i1 = self._cliente.read_holding_registers(addr - 1 + g, 2)
+                tipore = "'Holding Register'"
+                ende = 40000
+            elif tipo == 4:
+                i1 = self._cliente.read_input_registers(addr - 1 + g, 2)
+                tipore = "'Input Register'"
+                ende = 30000
+            else:
+                print('Tipo inválido..')
             for x in i1:
                 x = bin(x).lstrip("0b")
                 e1.insert(0 + g, x)
@@ -285,7 +347,7 @@ class ClienteMODBUS():
             value = ((-1)**sign)*(1+mantdec)*2**(expodec-127)
             print(f'{round(value, 3)}')
             y += 2
-            self.inserirDB(addrs=(4000+addr+y-2), tipo="'Holding Register'", value=round(value, 3))
+            self.inserirDB(addrs=(ende+addr+y-2), tipo=tipore, value=round(value, 3))
         return
 
     def lerDadoFloatSwapped(self, tipo, addr, leng):
@@ -296,7 +358,16 @@ class ClienteMODBUS():
         g = 0
         e1 = []
         while i < leng:
-            i1 = self._cliente.read_holding_registers(addr - 1 + g, 2)
+            if tipo == 3:
+                i1 = self._cliente.read_holding_registers(addr - 1 + g, 2)
+                tipore = "'Holding Register'"
+                ende = 40000
+            elif tipo == 4:
+                i1 = self._cliente.read_input_registers(addr - 1 + g, 2)
+                tipore = "'Input Register'"
+                ende = 30000
+            else:
+                print('Tipo inválido..')
             i2 = i1[::-1]
             for x in i2:
                 x = bin(x).lstrip("0b")
@@ -330,8 +401,9 @@ class ClienteMODBUS():
             value = ((-1)**sign)*(1+mantdec)*2**(expodec-127)
             print(f'{round(value, 3)}')
             y += 2
-            self.inserirDB(addrs=(4000+addr+y-2), tipo="'Holding Register'",value=round(value, 3))
+            self.inserirDB(addrs=(ende+addr+y-2), tipo=tipore, value=round(value, 3))
         return
+
 
     def escreveDado(self, tipo, addr, valor):
         """
