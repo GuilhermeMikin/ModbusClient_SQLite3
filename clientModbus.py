@@ -9,7 +9,7 @@ class ClienteMODBUS():
     Classe Cliente MODBUS
     """
 
-    def __init__(self, server_ip, porta, scan_time=1, valor=0, date='xxxx-xx-xx xx:xx:xx', dbpath="C:\database.db"):
+    def __init__(self, server_ip, porta, scan_time=1, valor=0, date='xxxx-xx-xx xx:xx:xx', dbpath="C:\database3.db"):
         """
         Construtor
         """
@@ -152,13 +152,29 @@ class ClienteMODBUS():
         except Exception as e:
             print('\033[31mERRO: ', e.args, '\033[m')
 
-    def inserirDB(self, value):
+    def createTable(self):
+        """
+        Método que cria a tabela para armazenamento dos dados, caso ela não exista
+        """
+        try:
+            sql_str = f"""
+            CREATE TABLE IF NOT EXISTS pointValues (
+                ID INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, Endereço NUMERIC, Tipo TEXT, Valor REAL, TimeStamp1 TEXT NOT NULL)
+                """
+            self._cursor.execute(sql_str)
+            self._con.commit()
+        except Exception as e:
+            print('\033[31mERRO: ', e.args, '\033[m')
+
+
+    def inserirDB(self, addrs, tipo, value):
         """
         Método para inserção dos dados no DB
         """
         try:
-            str_values = f"{value} , '{self._date}'"
-            sql_str = f'INSERT INTO pointValues (Valor, TimeStamp1) VALUES ({str_values})'
+            self.createTable()
+            str_values = f"{addrs}, {tipo}, {value} , '{self._date}'"
+            sql_str = f'INSERT INTO pointValues (Endereço, Tipo, Valor, TimeStamp1) VALUES ({str_values})'
             self._cursor.execute(sql_str)
             self._con.commit()
             #self._con.close()
@@ -183,7 +199,7 @@ class ClienteMODBUS():
                         value = 1
                     else:
                         value = 0
-                    self.inserirDB(value)
+                    self.inserirDB(addrs=(0000+addr), tipo="'Coil Status'",value=value)
             return 
 
         elif tipo == 2:
@@ -196,7 +212,7 @@ class ClienteMODBUS():
                     value = di[0 + idi]
                     idi += 1
                     print(value)
-                    self.inserirDB(value)
+                    self.inserirDB(addrs=(1000+addr), tipo="'Input Status'",value=value)
             return 
 
         elif tipo == 3:
@@ -209,7 +225,7 @@ class ClienteMODBUS():
                     value = hr[0+ihr]
                     ihr += 1
                     print(value)
-                    self.inserirDB(value)
+                    self.inserirDB(addrs=(4000+addr), tipo="'Holding Register'",value=value)
             return 
 
         elif tipo == 4:
@@ -222,7 +238,7 @@ class ClienteMODBUS():
                     value = ir[0 + iir]
                     iir += 1
                     print(value)
-                    self.inserirDB(value)
+                    self.inserirDB(addrs=(3000+addr), tipo="'Input Register'",value=value)
             return 
 
         else:
@@ -269,7 +285,7 @@ class ClienteMODBUS():
             value = ((-1)**sign)*(1+mantdec)*2**(expodec-127)
             print(f'{round(value, 3)}')
             y += 2
-            self.inserirDB(round(value, 3))
+            self.inserirDB(addrs=(4000+addr+y-2), tipo="'Holding Register'", value=round(value, 3))
         return
 
     def lerDadoFloatSwapped(self, tipo, addr, leng):
@@ -314,7 +330,7 @@ class ClienteMODBUS():
             value = ((-1)**sign)*(1+mantdec)*2**(expodec-127)
             print(f'{round(value, 3)}')
             y += 2
-            self.inserirDB(round(value, 3))
+            self.inserirDB(addrs=(4000+addr+y-2), tipo="'Holding Register'",value=round(value, 3))
         return
 
     def escreveDado(self, tipo, addr, valor):
