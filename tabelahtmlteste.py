@@ -1,3 +1,19 @@
+from pandas.io import html
+import pandas as pd
+import numpy as np
+
+def criatabelahtml():
+    """
+    Método para escrita de tabela no HTML
+    """
+    try:
+        colunas="Valor TimeStamp".split()
+        linhas = "40001 40002 40003 40004 40005".split()
+        dadoss = np.random.randint(390,410,len(colunas)*len(linhas)).reshape(len(linhas),len(colunas))
+        tabela = pd.DataFrame(data=dadoss, index=linhas, columns=colunas)
+        html = tabela.to_html()
+        arq = open("index2.html", "w")
+        arq.write("""
 <html>
 <head>
 <title> Sist. Monitoramento </title> 
@@ -23,7 +39,7 @@
 </head>
         <img src="sismon.png" height="32%" width="100%"></>
         <br/><br>
-        <h5> Um sistema integrado de monitoramento de variáveis de processo e indicadores de desempenho para otimização de linhas de produção em Indústrias 4.0 </h5>
+        <h5> Um sistema integrado de monitoramento de variaveis de processo e indicadores de desempenho para otimizacao de linhas de producao em Industrias 4.0 </h5>
         <link rel="stylesheet" href="style.css">
 <br>
 </script>
@@ -50,24 +66,32 @@
         </nav>
             <center>
             <font size="5"><b> Cliente Modbus </b></font>
-			
+            
 <br /><br>
 
 <h3> 
-  <div id=PV> Esperando Leitura...  </div>
+<div id=PV> Esperando Leitura...  </div>
 </h3> 
 
- <br>
+<br>
 <Input ID="LerMDB"  onclick="LerMDB()" type="button" value="Iniciar Leitura">
 
 <br /><br /><br>
 
 <H3> 
-  <div id=VL>  </div>
 </H3> 
+                    """)
+        arq.write(html)
+        arq.write("""
 <br /><br>
 </center>
 <br /><br /><br>
-<!--{{InsertControlsHere}}-Do not remove this line-->
 </body>
 </html>
+                    """)
+        arq.close()
+        print(dadoss)
+    except Exception as e:
+        print('\033[31mERRO: ', e.args, '\033[m')
+
+criatabelahtml()

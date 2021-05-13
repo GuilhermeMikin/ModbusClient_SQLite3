@@ -1,5 +1,8 @@
+from pandas.io import html
 from pyModbusTCP.client import ModbusClient
 from time import sleep
+import pandas as pd
+import numpy as np
 
 
 class ClienteMODBUS():
@@ -298,3 +301,35 @@ class ClienteMODBUS():
 
         except Exception as e:
             print('\033[31mERRO: ', e.args, '\033[m')
+
+    
+    # def escreveHta(self, valor):
+    #     """
+    #     Método para escrita na interface
+    #     """
+    #     try:
+    #         valor = 
+
+    #         # file = open("modbusvalues.txt","w") 
+    #         # file.write(str(valor)) 
+    #         # file.close() 
+
+    #     except Exception as e:
+    #         print('\033[31mERRO: ', e.args, '\033[m')
+
+
+    # def criatabelahtml(self):
+    #     """
+    #     Método para escrita de tabela no HTML
+    #     """
+    #     try:
+    #         colunas="Nota1 Nota2 Nota3 Nota4 Nota5".split()
+    #         linhas = "Maria Joao Carla Alberto Judson Gustavo Marcos".split()
+    #         dadoss = np.random.randint(10,100,len(colunas)*len(linhas)).reshape(len(linhas),len(colunas))
+    #         tabela = pd.DataFrame(data=dadoss, index=linhas, columns=colunas)
+    #         html = tabela.to_html()
+    #         arq = open("index.html", "w")
+    #         arq = arq.write(html)
+
+    #     except Exception as e:
+    #         print('\033[31mERRO: ', e.args, '\033[m')
