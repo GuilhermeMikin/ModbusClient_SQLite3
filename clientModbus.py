@@ -1,3 +1,4 @@
+from pyModbusTCP import client
 from pyModbusTCP.client import ModbusClient
 from time import sleep
 import time
@@ -11,12 +12,15 @@ class ClienteMODBUS():
     Classe Cliente MODBUS
     """
 
-    def __init__(self, server_ip, porta, scan_time=0.5, valor=0, dbpath="C:\database3.db"):
+    def __init__(self, server_ip, porta, device_id, scan_time=0.5, valor=0, dbpath="C:\database3.db"):
         """
-        Construtor
+        Construtor;
         """
-        self._cliente = ModbusClient(host=server_ip, port=porta)
+        self._cliente = ModbusClient(host=server_ip, port=porta, unit_id=device_id)
         self._scan_time = scan_time
+        self._server_ip = server_ip
+        self._device_id = device_id
+        self._port = porta
         
         self._dbpath = dbpath
         self._valor = valor
@@ -73,13 +77,23 @@ class ClienteMODBUS():
                                     print(f'\033[33mLeitura {i + 1}:\033[m')
                                     self.lerDado(int(tipo), int(addr), leng)
                                     sleep(self._scan_time)
+                                # print(f'isopen: {self._cliente.is_open}')
+                                # print(f'last error: {self._cliente.last_error}')
+                                # print(f'last error txt: {self._cliente.last_error_txt}')
+                                # print(f'last except txt: {self._cliente.last_except_txt(True)}')
+                                # print(f'timeout: {self._cliente.timeout}')
+                                # print(f'port: {self._cliente.port}')
+                                # print(f'host: {self._cliente.host}')
                                 print('\nValores lidos e inseridos no DB com sucesso!!\n')
                                 sleep(0.8)
                             except Exception as e:
                                 print('\033[31mERRO: ', e.args, '\033[m')
                                 try:
-                                    print('\033[33mSegunda tentativa..\033[m')
-                                    sleep(5)
+                                    sleep(0.5)
+                                    print('\033[33m\nSegunda tentativa..\033[m')
+                                    if not self._cliente.is_open():
+                                        self._cliente.open()
+                                    sleep(2)
                                     for i in range(0, int(nvezes)):
                                         print(f'\033[33mLeitura {i + 1}:\033[m')
                                         self.lerDado(int(tipo), int(addr), leng)
@@ -87,8 +101,8 @@ class ClienteMODBUS():
                                     print('\nValores lidos e inseridos no DB com sucesso!!\n')
                                     sleep(0.8)
                                 except Exception as e:
-                                    print('\033[31mERRO: ', e.args, '\033[m\n\n')
-                                    print('\nO Cliente não conseguiu receber uma resposta.. \nVoltando ao menu.. ')
+                                    print('\033[31mERRO: ', e.args, '\033[m')
+                                    print('\nO Cliente não conseguiu receber uma resposta.. \nVoltando ao menu..\n\n')
                                     sleep(1.5)
 
                         elif val == 2: #valores FLOAT
@@ -105,8 +119,8 @@ class ClienteMODBUS():
                                 print('\nValores lidos e inseridos no DB com sucesso!!\n')
                                 sleep(0.8)
                             except Exception as e:
-                                print('\033[31mERRO: ', e.args, '\033[m\n\n')
-                                print('\nO Cliente não conseguiu receber uma resposta.. \nVoltando ao menu.. ')
+                                print('\033[31mERRO: ', e.args, '\033[m\n')
+                                print('O Cliente não conseguiu receber uma resposta.. \nVoltando ao menu..\n\n')
                                 sleep(1.5)
 
                         elif val == 3: #valores FLOAT SWAPPED 
@@ -123,8 +137,8 @@ class ClienteMODBUS():
                                 print('\nValores lidos e inseridos no DB com sucesso!!\n')
                                 sleep(0.8)
                             except Exception as e:
-                                print('\033[31mERRO: ', e.args, '\033[m\n\n')
-                                print('\nO Cliente não conseguiu receber uma resposta.. \nVoltando ao menu.. ')
+                                print('\033[31mERRO: ', e.args, '\033[m\n')
+                                print('O Cliente não conseguiu receber uma resposta.. \nVoltando ao menu..\n\n')
                                 sleep(1.5)
 
                         else:
@@ -155,8 +169,8 @@ class ClienteMODBUS():
                                 print('\nValores lidos e inseridos no DB com sucesso!!\n')
                                 sleep(0.8)
                             except Exception as e:
-                                print('\033[31mERRO: ', e.args, '\033[m\n\n')
-                                print('\nO Cliente não conseguiu receber uma resposta.. \nVoltando ao menu.. ')
+                                print('\033[31mERRO: ', e.args, '\033[m\n')
+                                print('O Cliente não conseguiu receber uma resposta.. \nVoltando ao menu..\n\n')
                                 sleep(1.5)
 
                         elif val == 2: #valores FLOAT
@@ -173,8 +187,8 @@ class ClienteMODBUS():
                                 print('\nValores lidos e inseridos no DB com sucesso!!\n')
                                 sleep(0.8)
                             except Exception as e:
-                                print('\033[31mERRO: ', e.args, '\033[m\n\n')
-                                print('\nO Cliente não conseguiu receber uma resposta.. \nVoltando ao menu.. ')
+                                print('\033[31mERRO: ', e.args, '\033[m\n')
+                                print('O Cliente não conseguiu receber uma resposta.. \nVoltando ao menu..\n\n')
                                 sleep(1.5)
 
                         elif val == 3: #valores FLOAT SWAPPED 
@@ -191,8 +205,8 @@ class ClienteMODBUS():
                                 print('\nValores lidos e inseridos no DB com sucesso!!\n')
                                 sleep(0.8)
                             except Exception as e:
-                                print('\033[31mERRO: ', e.args, '\033[m\n\n')
-                                print('\nO Cliente não conseguiu receber uma resposta.. \nVoltando ao menu.. ')
+                                print('\033[31mERRO: ', e.args, '\033[m\n')
+                                print('O Cliente não conseguiu receber uma resposta.. \nVoltando ao menu..\n\n')
                                 sleep(1.5)
 
                         else:
@@ -214,8 +228,8 @@ class ClienteMODBUS():
                             print('\nValores lidos e inseridos no DB com sucesso!!\n')
                             sleep(0.8)
                         except Exception as e:
-                            print('\033[31mERRO: ', e.args, '\033[m\n\n')
-                            print('\nO Cliente não conseguiu receber uma resposta.. \nVoltando ao menu.. ')
+                            print('\033[31mERRO: ', e.args, '\033[m\n')
+                            print('O Cliente não conseguiu receber uma resposta.. \nVoltando ao menu..\n\n')
                             sleep(1.5)
 
                 elif sel == '2':
@@ -236,14 +250,51 @@ class ClienteMODBUS():
                         sleep(1.5)
                         self.escreveDado(int(tipo), int(addr), valor)
                     except Exception as e:
-                        print('\033[31mERRO: ', e.args, '\033[m\n\n')
-                        print('\nO Cliente não conseguiu escrever.. \nVoltando ao menu.. ')
+                        print('\033[31mERRO: ', e.args, '\033[m')
+                        print('\nO Cliente não conseguiu escrever.. \nVoltando ao menu..\n\n')
                         sleep(1.5)
 
                 elif sel == '3':
-                    # print('\nQual tipo de configuração deseja fazer? \n1- Endereço IP \n2- ScanTime')
-                    scant = input('Novo tempo de varredura [s]: ')
-                    self._scan_time = float(scant)
+                    print('\nQual tipo de configuração deseja fazer? \n1- Endereço IP \n2- Porta TCP \n3- Device ID \n4- ScanTime \n5- Voltar')
+                    config = int(input("Configuração: "))
+                    if config == 1:
+                        ipserv = str(input('Novo endereço IP: '))
+                        try:
+                            self._server_ip = ipserv
+                        except Exception as e:
+                            print('\033[31mERRO: ', e.args, '\033[m')
+                            print('\nNão foi possível alterar o endereço IP.. \nVoltando ao menu..\n\n')
+                            sleep(0.5)
+                    elif config == 2:
+                        porttcp = input('Nova porta TCP: ')
+                        try:
+                            self._port = int(porttcp)
+                        except Exception as e:
+                            print('\033[31mERRO: ', e.args, '\033[m')
+                            print('\nNão foi possível alterar a porta.. \nVoltando ao menu..\n\n')
+                            sleep(0.5)
+                    elif config == 3:
+                        iddevice = input('Novo device ID: ')
+                        try:
+                            self._device_id = int(iddevice)
+                        except Exception as e:
+                            print('\033[31mERRO: ', e.args, '\033[m')
+                            print('\nNão foi possível alterar o ID do device.. \nVoltando ao menu..\n\n')
+                            sleep(0.5)
+                    elif config == 4:
+                        scant = input('Novo tempo de varredura [s]: ')
+                        try:    
+                            self._scan_time = float(scant)
+                        except Exception as e:
+                            print('\033[31mERRO: ', e.args, '\033[m')
+                            print('\nNão foi possível alterar o tempo de varredura.. \nVoltando ao menu..\n\n')
+                            sleep(0.5)
+                    elif config == 5:
+                        print('Voltando ao menu inicial..')
+                    else:
+                        sleep(0.3)
+                        print('\033[31mSeleção inválida..\033[m\n')
+                        sleep(0.7)
 
                 elif sel == '4':
                     sleep(0.2)
