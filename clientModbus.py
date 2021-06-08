@@ -63,7 +63,7 @@ class ClienteMODBUS():
                                 break
 
                         if val == 1: #valores INTEGER
-                            addr = input(f'\nAddress: ')
+                            addr = int(input(f'\nAddress: '))
                             leng = int(input(f'Length: '))
                             nvezes = input('Quantidade de leituras: ')
                             print('\nComeçando leitura Decimal..\n')
@@ -271,6 +271,7 @@ class ClienteMODBUS():
 
         elif tipo == 3:
             hr = self._cliente.read_holding_registers(addr - 1, leng)
+            sleep(1)
             ihr = 0
             while ihr <= leng:
                 if ihr == leng:
