@@ -12,7 +12,7 @@ class ClienteMODBUS():
     Classe Cliente MODBUS
     """
 
-    def __init__(self, server_ip, porta, device_id=1, scan_time=0.5, valor=0, dbpath="C:\database3.db"):
+    def __init__(self, server_ip, porta, device_id=1, scan_time=0.5, valor=0, dbpath="C:\database.db"):
         """
         Construtor
         """
@@ -42,7 +42,7 @@ class ClienteMODBUS():
             atendimento = True
             while atendimento:
                 print('-' * 100)
-                print('Cliente Mosbus'.center(100))
+                print('\033[34mCliente Mosbus\033[m'.center(100))
                 print('-' * 100)
                 sel = input("Qual serviço? \n1- Leitura \n2- Escrita \n3- Configuração \n4- Sair \nNº Serviço: ")
                 if sel == '1':
