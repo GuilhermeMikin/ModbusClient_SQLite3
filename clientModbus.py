@@ -12,7 +12,7 @@ class ClienteMODBUS():
     Classe Cliente MODBUS
     """
 
-    def __init__(self, server_ip, porta, device_id=1, scan_time=0.3, valor=0, dbpath="C:\database.db"):
+    def __init__(self,server_ip,porta,device_id=1,scan_time=0.3,valor=0,dbpath="C:\database.db"):
         """
         Construtor
         """
@@ -72,9 +72,9 @@ class ClienteMODBUS():
                             print('\nComeçando leitura Decimal..\n')
                             sleep(0.5)
                             try:
-                                for i in range(0, int(nvezes)):
-                                    print(f'\033[33mLeitura {i + 1}:\033[m')
-                                    print(self.lerDado(int(tipo), int(addr), leng))
+                                for i in range(0,int(nvezes)):
+                                    print(f'\033[33mLeitura {i+1}:\033[m')
+                                    print(self.lerDado(int(tipo),int(addr),leng))
                                     sleep(self._scan_time)
                                 print('\nValores lidos e inseridos no DB com sucesso!!\n')
                                 sleep(0.5)
