@@ -106,7 +106,7 @@ class ClienteMODBUS():
                             try:
                                 for i in range(0, int(nvezes)):
                                     print(f'\033[33mLeitura {i + 1}:\033[m')
-                                    self.lerDadoFloat(int(tipo), int(addr), leng)
+                                    print(self.lerDadoFloat(int(tipo), int(addr), leng))
                                     sleep(self._scan_time)
                                 print('\nValores lidos e inseridos no DB com sucesso!!\n')
                                 sleep(0.5)
@@ -124,7 +124,7 @@ class ClienteMODBUS():
                             try:
                                 for i in range(0, int(nvezes)):
                                     print(f'\033[33mLeitura {i + 1}:\033[m')
-                                    self.lerDadoFloatSwapped(int(tipo), int(addr), leng)
+                                    print(self.lerDadoFloatSwapped(int(tipo), int(addr), leng))
                                     sleep(self._scan_time)
                                 print('\nValores lidos e inseridos no DB com sucesso!!\n')
                                 sleep(0.5)
@@ -357,6 +357,7 @@ class ClienteMODBUS():
         i = 0
         g = 0
         e1 = []
+        listfloat = []
         while i < leng:
             if tipo == 3:
                 i1 = self._cliente.read_holding_registers(addr - 1 + g, 2)
@@ -398,10 +399,11 @@ class ClienteMODBUS():
                 mantdec = mantdec + (int(mant[i]) * (2 ** mantpot))
                 mantpot -= 1
             value = ((-1)**sign)*(1+mantdec)*2**(expodec-127)
-            print(f'{round(value, 3)}')
+            # print(f'{round(value, 3)}')
+            listfloat.append(round(value, 3))
             y += 2
-            self.inserirDB(addrs=(ende+addr+y-2), tipo=tipore, value=round(value, 3))
-        return
+            # self.inserirDB(addrs=(ende+addr+y-2), tipo=tipore, value=round(value, 3))
+        return listfloat
 
 
     def lerDadoFloatSwapped(self, tipo, addr, leng):
@@ -411,6 +413,7 @@ class ClienteMODBUS():
         i = 0
         g = 0
         e1 = []
+        listfloatsp = []
         while i < leng:
             if tipo == 3:
                 i1 = self._cliente.read_holding_registers(addr - 1 + g, 2)
@@ -453,10 +456,11 @@ class ClienteMODBUS():
                 mantdec = mantdec + (int(mant[i]) * (2 ** mantpot))
                 mantpot -= 1
             value = ((-1)**sign)*(1+mantdec)*2**(expodec-127)
-            print(f'{round(value, 3)}')
+            # print(f'{round(value, 3)}')
+            listfloatsp.append(round(value, 3))
             y += 2
-            self.inserirDB(addrs=(ende+addr+y-2), tipo=tipore, value=round(value, 3))
-        return
+            # self.inserirDB(addrs=(ende+addr+y-2), tipo=tipore, value=round(value, 3))
+        return listfloatsp
 
 
     def escreveDado(self, tipo, addr, valor):
