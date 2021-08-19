@@ -40,7 +40,7 @@ class ClienteMODBUS():
             atendimento = True
             while atendimento:
                 print('-' * 100)
-                print('\033[34mCliente Mosbus\033[m'.center(100))
+                print('\033[34mCliente Modbus\033[m'.center(100))
                 print('-' * 100)
                 sel = input("Qual serviço? \n1- Leitura \n2- Escrita \n3- Configuração \n4- Sair \nNº Serviço: ")
                 if sel == '1':
