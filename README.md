@@ -1,5 +1,5 @@
 # pyModbusClient
- Um cliente Modbus com pyModbusTCP.
+ Um cliente Modbus com pyModbusTCP - https://github.com/sourceperl/pyModbusTCP
  - Com banco de dados SQLite
 
 Reading modbus displays:
